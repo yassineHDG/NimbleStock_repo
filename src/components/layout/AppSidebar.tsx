@@ -1,11 +1,12 @@
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BarChart3, 
   Package, 
   Settings, 
   Plus, 
-  ShoppingCart 
+  ShoppingCart,
+  LogOut
 } from 'lucide-react';
 import {
   Sidebar,
@@ -17,12 +18,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarTrigger
+  SidebarTrigger,
+  SidebarFooter
 } from "@/components/ui/sidebar";
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   
   const menuItems = [
     {
@@ -51,6 +58,15 @@ export function AppSidebar() {
       icon: Settings,
     },
   ];
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès"
+    });
+    navigate("/login");
+  };
 
   return (
     <Sidebar>
@@ -82,6 +98,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="p-4">
+        <div className="text-sm mb-2">
+          {user && <p>Connecté en tant que: <strong>{user.username}</strong></p>}
+        </div>
+        <Button variant="outline" className="w-full" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Déconnexion
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -3,31 +3,54 @@ import { Product } from '@/types';
 import { mockProducts, LOW_STOCK_THRESHOLD } from './mockData';
 import { toast } from '@/components/ui/use-toast';
 
-// Local storage key
-const STORAGE_KEY = 'inventory_products';
+// Le chemin vers notre fichier JSON
+const JSON_FILE_PATH = '/api/products.json';
 
-// Helper to get products from storage or initial mock data
-const getStoredProducts = (): Product[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    return JSON.parse(stored);
+// Fonction pour récupérer les produits depuis l'API
+const getProductsFromAPI = async (): Promise<Product[]> => {
+  try {
+    const response = await fetch(JSON_FILE_PATH);
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des produits');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur lors du chargement des produits:', error);
+    // Si le fichier n'existe pas encore ou autre erreur, utiliser les données de démonstration
+    return mockProducts;
   }
-  
-  // Initialize with mock data if nothing in storage
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(mockProducts));
-  return mockProducts;
 };
 
-// Save products to storage
-const saveProducts = (products: Product[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+// Fonction pour sauvegarder les produits via l'API
+const saveProductsToAPI = async (products: Product[]): Promise<void> => {
+  try {
+    const response = await fetch(JSON_FILE_PATH, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(products),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erreur lors de la sauvegarde des produits');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde des produits:', error);
+    toast({
+      title: "Erreur",
+      description: "Une erreur est survenue lors de l'enregistrement des données.",
+      variant: "destructive"
+    });
+  }
 };
 
 // Get all products
 export const getAllProducts = async (): Promise<Product[]> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(getStoredProducts());
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
+      resolve(products);
     }, 300); // Simulate network delay
   });
 };
@@ -35,8 +58,8 @@ export const getAllProducts = async (): Promise<Product[]> => {
 // Get product by ID
 export const getProductById = async (id: string): Promise<Product | null> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const products = getStoredProducts();
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
       const product = products.find(p => p.id === id) || null;
       resolve(product);
     }, 300);
@@ -46,8 +69,8 @@ export const getProductById = async (id: string): Promise<Product | null> => {
 // Add a new product
 export const addProduct = async (product: Omit<Product, 'id' | 'created_at'>): Promise<Product> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const products = getStoredProducts();
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
       const newProduct: Product = {
         ...product,
         id: Date.now().toString(),
@@ -55,7 +78,7 @@ export const addProduct = async (product: Omit<Product, 'id' | 'created_at'>): P
       };
       
       products.push(newProduct);
-      saveProducts(products);
+      await saveProductsToAPI(products);
       
       toast({
         title: "Produit ajouté",
@@ -70,8 +93,8 @@ export const addProduct = async (product: Omit<Product, 'id' | 'created_at'>): P
 // Update a product
 export const updateProduct = async (id: string, updates: Partial<Omit<Product, 'id' | 'created_at'>>): Promise<Product> => {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const products = getStoredProducts();
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
       const index = products.findIndex(p => p.id === id);
       
       if (index === -1) {
@@ -90,7 +113,7 @@ export const updateProduct = async (id: string, updates: Partial<Omit<Product, '
       };
       
       products[index] = updatedProduct;
-      saveProducts(products);
+      await saveProductsToAPI(products);
       
       toast({
         title: "Produit mis à jour",
@@ -105,8 +128,8 @@ export const updateProduct = async (id: string, updates: Partial<Omit<Product, '
 // Delete a product
 export const deleteProduct = async (id: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const products = getStoredProducts();
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
       const index = products.findIndex(p => p.id === id);
       
       if (index === -1) {
@@ -121,7 +144,7 @@ export const deleteProduct = async (id: string): Promise<void> => {
       
       const productName = products[index].name;
       products.splice(index, 1);
-      saveProducts(products);
+      await saveProductsToAPI(products);
       
       toast({
         title: "Produit supprimé",
@@ -136,8 +159,8 @@ export const deleteProduct = async (id: string): Promise<void> => {
 // Get low stock products
 export const getLowStockProducts = async (): Promise<Product[]> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const products = getStoredProducts();
+    setTimeout(async () => {
+      const products = await getProductsFromAPI();
       const lowStockProducts = products.filter(p => p.quantity < LOW_STOCK_THRESHOLD);
       resolve(lowStockProducts);
     }, 300);
@@ -147,8 +170,8 @@ export const getLowStockProducts = async (): Promise<Product[]> => {
 // Search products
 export const searchProducts = async (query: string, category?: string): Promise<Product[]> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      let products = getStoredProducts();
+    setTimeout(async () => {
+      let products = await getProductsFromAPI();
       
       // Filter by search query
       if (query) {

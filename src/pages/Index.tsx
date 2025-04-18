@@ -10,7 +10,7 @@ export default function Index() {
   useEffect(() => {
     // Redirect to dashboard if logged in, otherwise to login
     if (user) {
-      navigate("/");
+      navigate("/dashboard");  // Changé de "/" à "/dashboard" pour être explicite
     } else {
       navigate("/login");
     }

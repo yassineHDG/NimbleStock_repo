@@ -6,7 +6,8 @@ import {
   Settings, 
   Plus, 
   ShoppingCart,
-  LogOut
+  LogOut,
+  PanelLeft
 } from 'lucide-react';
 import {
   Sidebar,
@@ -19,7 +20,8 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarTrigger,
-  SidebarFooter
+  SidebarFooter,
+  useSidebar
 } from "@/components/ui/sidebar";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -30,6 +32,7 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { state } = useSidebar();
   
   const menuItems = [
     {
@@ -68,12 +71,14 @@ export function AppSidebar() {
     navigate("/login");
   };
 
+  const isCollapsed = state === "collapsed";
+
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader className="py-4">
         <div className="flex items-center justify-center px-6 gap-2">
           <Package className="h-6 w-6" />
-          <span className="font-semibold text-lg">Nimble Stock</span>
+          {!isCollapsed && <span className="font-semibold text-lg">Nimble Stock</span>}
         </div>
         <SidebarTrigger className="absolute right-2 top-4 sm:right-4 text-sidebar-foreground hover:text-sidebar-primary-foreground" />
       </SidebarHeader>
@@ -84,9 +89,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={cn(
-                    location.pathname === item.url && "bg-sidebar-accent text-sidebar-accent-foreground"
-                  )}>
+                  <SidebarMenuButton 
+                    asChild 
+                    className={cn(
+                      location.pathname === item.url && "bg-sidebar-accent text-sidebar-accent-foreground"
+                    )}
+                    tooltip={isCollapsed ? item.title : undefined}
+                  >
                     <Link to={item.url} className="flex items-center gap-2">
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
@@ -99,13 +108,34 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <div className="text-sm mb-2">
-          {user && <p>Connecté en tant que: <strong>{user.username}</strong></p>}
-        </div>
-        <Button variant="outline" className="w-full" onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Déconnexion
+        {!isCollapsed && (
+          <div className="text-sm mb-2">
+            {user && <p>Connecté en tant que: <strong>{user.username}</strong></p>}
+          </div>
+        )}
+        <Button 
+          variant="outline" 
+          className="w-full flex items-center justify-center" 
+          onClick={handleLogout}
+          size={isCollapsed ? "icon" : "default"}
+          title="Déconnexion"
+        >
+          <LogOut className={cn("h-4 w-4", !isCollapsed && "mr-2")} />
+          {!isCollapsed && "Déconnexion"}
         </Button>
+        {isCollapsed && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="w-full mt-2" 
+            onClick={() => {
+              const trigger = document.querySelector('[data-sidebar="trigger"]') as HTMLButtonElement;
+              if (trigger) trigger.click();
+            }}
+          >
+            <PanelLeft className="h-4 w-4" />
+          </Button>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

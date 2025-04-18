@@ -3,13 +3,13 @@ import { Product } from '@/types';
 import { mockProducts, LOW_STOCK_THRESHOLD } from './mockData';
 import { toast } from '@/components/ui/use-toast';
 
-// Le chemin vers notre fichier JSON
-const JSON_FILE_PATH = '/api/products.json';
+// URL complète vers le serveur Node.js
+const API_URL = 'http://localhost:3001/api/products';
 
 // Fonction pour récupérer les produits depuis l'API
 const getProductsFromAPI = async (): Promise<Product[]> => {
   try {
-    const response = await fetch(JSON_FILE_PATH);
+    const response = await fetch(API_URL);
     if (!response.ok) {
       throw new Error('Erreur lors de la récupération des produits');
     }
@@ -24,7 +24,7 @@ const getProductsFromAPI = async (): Promise<Product[]> => {
 // Fonction pour sauvegarder les produits via l'API
 const saveProductsToAPI = async (products: Product[]): Promise<void> => {
   try {
-    const response = await fetch(JSON_FILE_PATH, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

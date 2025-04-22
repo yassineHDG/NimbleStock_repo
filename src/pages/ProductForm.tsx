@@ -12,12 +12,13 @@ export default function ProductFormPage() {
   const isEditMode = !!id;
   
   useEffect(() => {
-    // If in edit mode, load the product
+    // Si en mode édition, charger le produit
     if (isEditMode) {
       const loadProduct = async () => {
         setLoading(true);
         try {
           const data = await getProductById(id);
+          console.log("Produit chargé:", data); // Ajout d'un log pour déboguer
           setProduct(data);
         } catch (error) {
           console.error("Error loading product:", error);

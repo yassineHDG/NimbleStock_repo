@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/types";
@@ -21,11 +22,12 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const isFirstLoad = useRef(true);
 
+  // Initialiser le formulaire avec des valeurs par défaut ou celles du produit si en mode édition
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    quantity: "0",
-    price: "0"
+    name: product?.name || "",
+    category: product?.category || "",
+    quantity: product?.quantity?.toString() || "0",
+    price: product?.price?.toString() || "0"
   });
 
   useEffect(() => {
@@ -45,15 +47,16 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
     loadCategories();
   }, []);
 
+  // Mise à jour des données du formulaire quand le produit change
   useEffect(() => {
-    if (isEdit && product && isFirstLoad.current) {
+    if (isEdit && product && Object.keys(product).length > 0) {
+      console.log("Produit chargé pour édition:", product);
       setFormData({
         name: product.name,
         category: product.category,
         quantity: product.quantity.toString(),
         price: product.price.toString()
       });
-      isFirstLoad.current = false;
     }
   }, [isEdit, product]);
 
@@ -65,6 +68,13 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
   const handleCategoryChange = (value: string) => {
     setFormData(prev => ({ ...prev, category: value }));
   };
+
+  // Pour déboguer et voir la catégorie sélectionnée dans le formulaire
+  useEffect(() => {
+    if (isEdit) {
+      console.log("Valeur actuelle de la catégorie:", formData.category);
+    }
+  }, [formData.category, isEdit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,8 +123,8 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       const productData = {
         name: formData.name,
         category: formData.category,
-        quantity: quantity,
-        price: price
+        quantity: parseInt(formData.quantity),
+        price: parseFloat(formData.price)
       };
 
       if (isEdit && product) {
@@ -159,6 +169,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
             <Select
               value={formData.category}
               onValueChange={handleCategoryChange}
+              defaultValue={product?.category}
             >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Sélectionner une catégorie" />

@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -20,16 +19,16 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-  
+  const isFirstLoad = useRef(true);
+
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     quantity: "0",
     price: "0"
   });
-  
+
   useEffect(() => {
-    // Fetch categories
     const loadCategories = async () => {
       try {
         const data = await getAllCategories();
@@ -42,33 +41,34 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
         });
       }
     };
-    
+
     loadCategories();
-    
-    // If editing, populate form with product data
-    if (isEdit && product) {
+  }, []);
+
+  useEffect(() => {
+    if (isEdit && product && isFirstLoad.current) {
       setFormData({
         name: product.name,
         category: product.category,
         quantity: product.quantity.toString(),
         price: product.price.toString()
       });
+      isFirstLoad.current = false;
     }
   }, [isEdit, product]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleCategoryChange = (value: string) => {
     setFormData(prev => ({ ...prev, category: value }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
+
     if (!formData.name.trim()) {
       toast({
         title: "Erreur",
@@ -77,7 +77,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       });
       return;
     }
-    
+
     if (!formData.category) {
       toast({
         title: "Erreur",
@@ -86,7 +86,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       });
       return;
     }
-    
+
     const quantity = parseInt(formData.quantity);
     if (isNaN(quantity) || quantity < 0) {
       toast({
@@ -96,7 +96,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       });
       return;
     }
-    
+
     const price = parseFloat(formData.price);
     if (isNaN(price) || price <= 0) {
       toast({
@@ -106,9 +106,9 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       });
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       const productData = {
         name: formData.name,
@@ -116,13 +116,13 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
         quantity: quantity,
         price: price
       };
-      
+
       if (isEdit && product) {
         await updateProduct(product.id, productData);
       } else {
         await addProduct(productData);
       }
-      
+
       navigate('/products');
     } catch (error) {
       toast({
@@ -134,7 +134,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
       setLoading(false);
     }
   };
-  
+
   return (
     <Card className="max-w-lg mx-auto">
       <CardHeader>
@@ -153,10 +153,13 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="category">Catégorie</Label>
-            <Select value={formData.category} onValueChange={handleCategoryChange}>
+            <Select
+              value={formData.category}
+              onValueChange={handleCategoryChange}
+            >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Sélectionner une catégorie" />
               </SelectTrigger>
@@ -169,7 +172,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantité</Label>
@@ -185,7 +188,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="price">Prix unitaire (€)</Label>
               <Input
@@ -202,7 +205,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
             </div>
           </div>
         </CardContent>
-        
+
         <CardFooter className="flex justify-between">
           <Button
             type="button"

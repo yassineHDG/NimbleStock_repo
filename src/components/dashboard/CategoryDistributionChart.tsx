@@ -17,7 +17,7 @@ interface CategoryDistributionChartProps {
 }
 
 export function CategoryDistributionChart({ products }: CategoryDistributionChartProps) {
-  // Count products and quantity per category
+  // Compter le nombre de produits et la quantité par catégorie
   const categoryData = products.reduce<Record<string, { count: number; quantity: number }>>((acc, product) => {
     const category = product.category;
     
@@ -25,26 +25,32 @@ export function CategoryDistributionChart({ products }: CategoryDistributionChar
       acc[category] = { count: 0, quantity: 0 };
     }
     
+    // Incrémenter le compteur de produits uniques pour cette catégorie
     acc[category].count += 1;
+    // Ajouter la quantité en stock de ce produit
     acc[category].quantity += product.quantity;
     
     return acc;
   }, {});
   
-  // Prepare data for the chart
+  console.log("Données par catégorie:", categoryData); // Ajout d'un log pour déboguer
+  
+  // Préparer les données pour le graphique
   const data = Object.entries(categoryData).map(([category, { count, quantity }]) => ({
     name: category,
     count,
     quantity
   }));
   
-  // Sort data by quantity in descending order
+  // Trier les données par quantité en ordre décroissant
   data.sort((a, b) => b.quantity - a.quantity);
   
-  // Generate bar colors
+  console.log("Données pour le graphique:", data); // Ajout d'un log pour déboguer
+  
+  // Générer les couleurs des barres
   const barColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
   
-  // Custom tooltip for the chart
+  // Personnaliser l'infobulle pour le graphique
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (

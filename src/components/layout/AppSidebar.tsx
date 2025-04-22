@@ -1,4 +1,3 @@
-
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BarChart3, 
@@ -115,7 +114,7 @@ export function AppSidebar() {
         )}
         <Button 
           variant="outline" 
-          className="w-full flex items-center justify-center" 
+          className="w-full flex items-center justify-center bg-soft-purple text-white hover:bg-vivid-purple" 
           onClick={handleLogout}
           size={isCollapsed ? "icon" : "default"}
           title="Déconnexion"

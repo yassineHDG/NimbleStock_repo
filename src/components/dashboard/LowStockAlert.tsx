@@ -22,16 +22,16 @@ export function LowStockAlert({ products, threshold }: LowStockAlertProps) {
   };
   
   return (
-    <Alert className="bg-warning/20 border-warning">
-      <AlertTriangle className="h-4 w-4 text-warning" />
-      <AlertTitle className="text-warning-foreground">Stock faible détecté</AlertTitle>
-      <AlertDescription className="text-warning-foreground/80">
+    <Alert className="bg-soft-purple/20 border-vivid-purple">
+      <AlertTriangle className="h-4 w-4 text-vivid-purple" />
+      <AlertTitle className="text-vivid-purple">Stock faible détecté</AlertTitle>
+      <AlertDescription className="text-vivid-purple/80">
         <p>{products.length} produit{products.length > 1 ? 's ont' : ' a'} un stock inférieur à {threshold} unités.</p>
         <div className="mt-2">
           <Button 
             variant="outline" 
             size="sm" 
-            className="border-warning text-warning-foreground hover:bg-warning/20"
+            className="border-vivid-purple text-vivid-purple hover:bg-soft-purple/20"
             onClick={handleViewProducts}
           >
             Voir les produits concernés

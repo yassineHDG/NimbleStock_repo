@@ -114,7 +114,7 @@ export function AppSidebar() {
         )}
         <Button 
           variant="outline" 
-          className="w-full flex items-center justify-center bg-soft-purple text-white hover:bg-vivid-purple" 
+          className="w-full flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100" 
           onClick={handleLogout}
           size={isCollapsed ? "icon" : "default"}
           title="Déconnexion"

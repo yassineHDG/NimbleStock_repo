@@ -1,12 +1,19 @@
 
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');
+import express from 'express';
+import { promises as fs } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import cors from 'cors';
+
 const app = express();
 const PORT = 3001;
 
-const JSON_FILE_PATH = path.join(__dirname, 'products.json');
+// En ESM, __dirname n'est pas disponible, donc on le recrée 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const JSON_FILE_PATH = join(__dirname, 'products.json');
 
 // Middleware
 app.use(express.json());
@@ -17,20 +24,20 @@ app.use(cors({
 }));
 
 // Vérifier si le fichier existe sinon le créer
-if (!fs.existsSync(JSON_FILE_PATH)) {
-  fs.writeFileSync(JSON_FILE_PATH, JSON.stringify([]), 'utf8');
+if (!existsSync(JSON_FILE_PATH)) {
+  writeFileSync(JSON_FILE_PATH, JSON.stringify([]), 'utf8');
   console.log(`Fichier créé: ${JSON_FILE_PATH}`);
 }
 
 // Helper pour lire tous les produits
 const readProducts = () => {
-  const data = fs.readFileSync(JSON_FILE_PATH, 'utf8');
+  const data = readFileSync(JSON_FILE_PATH, 'utf8');
   return JSON.parse(data || '[]');
 };
 
 // Helper pour écrire tous les produits
 const writeProducts = (products) => {
-  fs.writeFileSync(JSON_FILE_PATH, JSON.stringify(products, null, 2), 'utf8');
+  writeFileSync(JSON_FILE_PATH, JSON.stringify(products, null, 2), 'utf8');
 };
 
 // Home

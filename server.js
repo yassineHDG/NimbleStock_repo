@@ -8,8 +8,13 @@ const PORT = 3001;
 
 const JSON_FILE_PATH = path.join(__dirname, 'products.json');
 
+// Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: '*', // Autoriser toutes les origines en développement
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Vérifier si le fichier existe sinon le créer
 if (!fs.existsSync(JSON_FILE_PATH)) {
@@ -39,6 +44,7 @@ app.get('/api/products', (req, res) => {
     const products = readProducts();
     res.json(products);
   } catch (error) {
+    console.error('Erreur lors de la lecture des produits:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -50,7 +56,8 @@ app.get('/api/products/:id', (req, res) => {
     const product = products.find(p => p.id == req.params.id);
     if (!product) return res.status(404).json({ error: 'Produit non trouvé' });
     res.json(product);
-  } catch {
+  } catch (error) {
+    console.error('Erreur lors de la récupération du produit:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -58,11 +65,14 @@ app.get('/api/products/:id', (req, res) => {
 // Ajouter un produit
 app.post('/api/products', (req, res) => {
   try {
+    console.log('Requête reçue:', req.body);
     const products = readProducts();
     const { name, category, quantity, price } = req.body;
     if (!name || !category || quantity == null || price == null) {
+      console.log('Champs manquants:', { name, category, quantity, price });
       return res.status(400).json({ error: 'Champs manquants' });
     }
+    
     const newProduct = {
       id: Date.now().toString(),
       name,
@@ -71,10 +81,14 @@ app.post('/api/products', (req, res) => {
       price: Number(price),
       created_at: new Date().toISOString()
     };
+    
+    console.log('Nouveau produit à ajouter:', newProduct);
     products.push(newProduct);
     writeProducts(products);
+    console.log('Produit ajouté avec succès');
     res.json(newProduct);
-  } catch {
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du produit:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -95,7 +109,8 @@ app.put('/api/products/:id', (req, res) => {
     };
     writeProducts(products);
     res.json(products[productIndex]);
-  } catch {
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du produit:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -109,7 +124,8 @@ app.delete('/api/products/:id', (req, res) => {
     const deleted = products.splice(productIndex, 1);
     writeProducts(products);
     res.json({ success: true, deleted: deleted[0] });
-  } catch {
+  } catch (error) {
+    console.error('Erreur lors de la suppression du produit:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });

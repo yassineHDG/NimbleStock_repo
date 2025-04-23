@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,16 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-
-// Pages
-import Dashboard from "./pages/Dashboard";
-import ProductsList from "./pages/ProductsList";
-import ProductForm from "./pages/ProductForm";
-import Categories from "./pages/Categories";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Index from "./pages/Index";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +21,7 @@ const App = () => (
             {/* Page d'index qui gère la redirection */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
             <Route path="/products" element={<ProtectedRoute><AppLayout><ProductsList /></AppLayout></ProtectedRoute>} />
             <Route path="/products/new" element={<ProtectedRoute><AppLayout><ProductForm /></AppLayout></ProtectedRoute>} />

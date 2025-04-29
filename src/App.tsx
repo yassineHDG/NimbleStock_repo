@@ -15,6 +15,9 @@ import ProductsList from "./pages/ProductsList";
 import ProductForm from "./pages/ProductForm";
 import Categories from "./pages/Categories";
 import Settings from "./pages/Settings";
+import CreateInvoice from "./pages/invoices/CreateInvoice";
+import InvoicesList from "./pages/invoices/InvoicesList";
+import InvoiceDetails from "./pages/invoices/InvoiceDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +40,10 @@ const App = () => (
             <Route path="/products/edit/:id" element={<ProtectedRoute><AppLayout><ProductForm /></AppLayout></ProtectedRoute>} />
             <Route path="/categories" element={<ProtectedRoute><AppLayout><Categories /></AppLayout></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>} />
+            {/* Routes pour les factures */}
+            <Route path="/facture" element={<ProtectedRoute><AppLayout><CreateInvoice /></AppLayout></ProtectedRoute>} />
+            <Route path="/facture/released" element={<ProtectedRoute><AppLayout><InvoicesList /></AppLayout></ProtectedRoute>} />
+            <Route path="/facture/details/:id" element={<ProtectedRoute><AppLayout><InvoiceDetails /></AppLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

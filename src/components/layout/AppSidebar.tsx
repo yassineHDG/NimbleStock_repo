@@ -1,3 +1,4 @@
+
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BarChart3, 
@@ -6,7 +7,9 @@ import {
   Plus, 
   ShoppingCart,
   LogOut,
-  PanelLeft
+  PanelLeft,
+  FileText,
+  ListChecks
 } from 'lucide-react';
 import {
   Sidebar,
@@ -36,7 +39,7 @@ export function AppSidebar() {
   const menuItems = [
     {
       title: "Tableau de bord",
-      url: "/",
+      url: "/dashboard",
       icon: BarChart3,
     },
     {
@@ -53,6 +56,16 @@ export function AppSidebar() {
       title: "Catégories",
       url: "/categories",
       icon: ShoppingCart,
+    },
+    {
+      title: "Nouvelle Facture",
+      url: "/facture",
+      icon: FileText,
+    },
+    {
+      title: "Factures Réalisées",
+      url: "/facture/released",
+      icon: ListChecks,
     },
     {
       title: "Paramètres",

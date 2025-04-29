@@ -74,6 +74,22 @@ app.get('/api/products', (req, res) => {
   }
 });
 
+// Route de test pour /api/register (GET - uniquement pour les tests)
+app.get('/api/register', (req, res) => {
+  res.json({ 
+    message: "Cette route est disponible uniquement avec la méthode POST pour l'inscription.", 
+    note: "Utilisez un client HTTP comme Postman pour envoyer une requête POST avec username, password et confirmPassword dans le body"
+  });
+});
+
+// Route de test pour /api/login (GET - uniquement pour les tests)
+app.get('/api/login', (req, res) => {
+  res.json({ 
+    message: "Cette route est disponible uniquement avec la méthode POST pour la connexion.",
+    note: "Utilisez un client HTTP comme Postman pour envoyer une requête POST avec username et password dans le body"
+  });
+});
+
 // Récupérer un produit par ID
 app.get('/api/products/:id', (req, res) => {
   try {

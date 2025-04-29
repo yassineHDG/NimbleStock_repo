@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,7 @@ export default function Login() {
           title: "Connexion réussie",
           description: "Bienvenue sur votre tableau de bord"
         });
-        navigate("/");
+        navigate("/dashboard");
       } else {
         toast({
           title: "Échec de la connexion",
@@ -47,9 +47,10 @@ export default function Login() {
         });
       }
     } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion",
+        description: "Une erreur est survenue lors de la connexion. Vérifiez que le serveur est en cours d'exécution.",
         variant: "destructive"
       });
     } finally {
@@ -78,7 +79,7 @@ export default function Login() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Votre nom d'utilisateur"
                 autoComplete="username"
               />
             </div>
@@ -101,7 +102,10 @@ export default function Login() {
           </CardFooter>
         </form>
         <div className="p-4 text-center text-sm text-muted-foreground">
-          <p>Utilisez "admin" comme nom d'utilisateur et mot de passe pour vous connecter.</p>
+          <p>
+            Vous n'avez pas de compte ?{" "}
+            <Link to="/register" className="text-primary underline">Inscrivez-vous</Link>
+          </p>
         </div>
       </Card>
     </div>

@@ -1,3 +1,4 @@
+
 import express from 'express';
 import { promises as fs } from 'fs';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -29,6 +30,12 @@ if (!existsSync(JSON_FILE_PATH)) {
   console.log(`Fichier créé: ${JSON_FILE_PATH}`);
 }
 
+// Vérifier si users.json existe, sinon le créer
+if (!existsSync(USERS_FILE_PATH)) {
+  writeFileSync(USERS_FILE_PATH, JSON.stringify([]), 'utf8');
+  console.log(`Fichier créé: ${USERS_FILE_PATH}`);
+}
+
 // Helper pour lire tous les produits
 const readProducts = () => {
   const data = readFileSync(JSON_FILE_PATH, 'utf8');
@@ -39,12 +46,6 @@ const readProducts = () => {
 const writeProducts = (products) => {
   writeFileSync(JSON_FILE_PATH, JSON.stringify(products, null, 2), 'utf8');
 };
-
-// Vérifier si users.json existe, sinon le créer
-if (!existsSync(USERS_FILE_PATH)) {
-  writeFileSync(USERS_FILE_PATH, JSON.stringify([]), 'utf8');
-  console.log(`Fichier créé: ${USERS_FILE_PATH}`);
-}
 
 // Helper pour lire les utilisateurs
 const readUsers = () => {
@@ -157,25 +158,63 @@ app.delete('/api/products/:id', (req, res) => {
 // Enregistrement d'un utilisateur
 app.post('/api/register', (req, res) => {
   try {
+    console.log('Requête d\'inscription reçue:', req.body);
     const { username, password, confirmPassword } = req.body;
     if (!username || !password || !confirmPassword) {
+      console.log('Champs manquants:', { username, password, confirmPassword });
       return res.status(400).json({ error: "Tous les champs sont obligatoires" });
     }
     if (password !== confirmPassword) {
+      console.log('Les mots de passe ne correspondent pas');
       return res.status(400).json({ error: "Les mots de passe ne correspondent pas" });
     }
     const users = readUsers();
     const exists = users.some(u => u.username === username);
     if (exists) {
+      console.log('Nom d\'utilisateur déjà pris:', username);
       return res.status(400).json({ error: "Nom d'utilisateur déjà pris" });
     }
     // Ajouter l'utilisateur (mot de passe en clair pour commencer)
     const newUser = { username, password };
     users.push(newUser);
     writeUsers(users);
-    return res.json({ success: true, message: "Inscription réussie" });
+    console.log('Utilisateur créé avec succès:', username);
+    return res.status(201).json({ success: true, message: "Inscription réussie" });
   } catch (error) {
     console.error("Erreur lors de l'inscription:", error);
+    return res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+// Route pour tester si l'API fonctionne
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API fonctionne correctement' });
+});
+
+// Route de connexion
+app.post('/api/login', (req, res) => {
+  try {
+    console.log('Tentative de connexion:', req.body);
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Tous les champs sont obligatoires" });
+    }
+    
+    const users = readUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (!user) {
+      return res.status(401).json({ error: "Nom d'utilisateur ou mot de passe incorrect" });
+    }
+    
+    // Dans une vraie application, vous généreriez un token JWT ici
+    return res.json({ 
+      success: true, 
+      message: "Connexion réussie",
+      user: { id: Date.now().toString(), username: user.username }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la connexion:", error);
     return res.status(500).json({ error: "Erreur serveur" });
   }
 });
@@ -184,4 +223,5 @@ app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);
   console.log(`API des produits disponible sur http://localhost:${PORT}/api/products`);
   console.log(`API des utilisateurs disponible sur http://localhost:${PORT}/api/register`);
+  console.log(`API de connexion disponible sur http://localhost:${PORT}/api/login`);
 });

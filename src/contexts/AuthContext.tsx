@@ -1,5 +1,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -29,16 +30,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // This is a mock login - in a real app, you would validate against a backend
-    // For demo purposes, we accept username "admin" and password "admin"
-    
-    if (username === "admin" && password === "admin") {
-      const user = { id: "1", username: username };
-      setUser(user);
-      localStorage.setItem("user", JSON.stringify(user));
-      return true;
+    try {
+      console.log("Tentative de connexion avec:", { username });
+      
+      // Authentifier avec l'API
+      const response = await fetch("http://localhost:3001/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setUser(data.user);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+      toast({
+        title: "Erreur de connexion",
+        description: "Impossible de se connecter au serveur. Vérifiez que le serveur est en cours d'exécution.",
+        variant: "destructive"
+      });
+      return false;
     }
-    return false;
   };
 
   const logout = () => {

@@ -35,12 +35,17 @@ export default function Register() {
     }
     setIsSubmitting(true);
     try {
+      console.log("Envoi de la requête d'inscription:", { username, password, confirmPassword });
       const res = await fetch("http://localhost:3001/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, confirmPassword }),
       });
+      
+      console.log("Statut de la réponse:", res.status);
       const data = await res.json();
+      console.log("Données reçues:", data);
+      
       if (res.ok) {
         toast({
           title: "Succès",
@@ -55,9 +60,10 @@ export default function Register() {
         });
       }
     } catch (error) {
+      console.error("Erreur lors de l'inscription:", error);
       toast({
         title: "Erreur",
-        description: "Erreur serveur pendant l'inscription",
+        description: "Erreur serveur pendant l'inscription. Assurez-vous que le serveur est en cours d'exécution.",
         variant: "destructive"
       });
     } finally {

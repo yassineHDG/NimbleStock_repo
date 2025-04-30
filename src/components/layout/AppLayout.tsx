@@ -3,7 +3,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Package } from "lucide-react";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -49,12 +48,6 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <main className="flex-1 overflow-auto">
-          <div className="flex items-center bg-white border-b p-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <Package className="h-8 w-8 text-primary" />
-              <span className="font-bold text-xl">Nimble Stock</span>
-            </div>
-          </div>
           <div className="p-6">
             {children}
           </div>

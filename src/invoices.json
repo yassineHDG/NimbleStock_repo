@@ -1,3 +1,37 @@
 [
-  
+  {
+    "id": "FAC-202505206567",
+    "customerName": "EMSI Roudani ",
+    "date": "2025-05-20T10:29:37.493Z",
+    "items": [
+      {
+        "productId": "1747736128488",
+        "name": "iPhone 15 Pro",
+        "category": "Électronique",
+        "unitPrice": 999,
+        "quantity": 2,
+        "subTotal": 1998
+      },
+      {
+        "productId": "1747736164114",
+        "name": "Chaise en bois",
+        "category": "Mobilier",
+        "unitPrice": 15,
+        "quantity": 1,
+        "subTotal": 15
+      },
+      {
+        "productId": "1747736229180",
+        "name": "Clavier RGB mécanique",
+        "category": "Bureautique",
+        "unitPrice": 200,
+        "quantity": 3,
+        "subTotal": 600
+      }
+    ],
+    "totalHT": 2613,
+    "tva": 522.6,
+    "totalTTC": 3135.6,
+    "createdAt": "2025-05-20T10:29:37.493Z"
+  }
 ]
